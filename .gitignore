@@ -15,3 +15,6 @@
 !/.github/
 !/.github/workflows/
 !/.github/workflows/*.yml
+nimble.develop
+nimble.paths
+nimbledeps

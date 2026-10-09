@@ -58,9 +58,9 @@ proc argument(name: string, value = val()): Argument =
 proc command(name: string, value = val(false)): Command =
   Command(m_name: name, value: value)
 
-proc option(short, long: string = "", argcount = 0,
+proc option(short: string, long: string = "", argcount = 0,
             value = val(false)): Option =
-  assert argcount in [0, 1]
+  assert argcount in {0, 1}
   result = Option(short: short, long: long,
                   argcount: argcount, value: value)
   if value.kind == vkBool and not value and argcount > 0:
@@ -265,9 +265,9 @@ proc option_parse[T](
     else:
       argcount = 1
   if argcount > 0:
-    var m: RegexMatch
-    if description.find(re"(?i)\[default:\ (.*)\]", m):
-      let bounds = m.group(0)[0]
+    var m: RegexMatch2
+    if description.find(re2"(?i)\[default:\ (.*)\]", m):
+      let bounds = m.group(0)
       value = val(description.substr(bounds.a, bounds.b))
     else:
       value = val()
@@ -437,7 +437,7 @@ proc parse_expr(tokens: TokenStream, options: var seq[Option]): seq[
 
 proc parse_pattern(source: string, options: var seq[Option]): Required =
   var tokens = token_stream(
-    source.replace(re"([\[\]\(\)\|]|\.\.\.)", r" $1 "),
+    source.replace(re2"([\[\]\(\)\|]|\.\.\.)", r" $1 "),
     new_exception(DocoptLanguageError, "")
   )
   let ret = parse_expr(tokens, options)
@@ -537,7 +537,7 @@ proc parse_argv(tokens: TokenStream, options: var seq[Option],
 
 
 proc parse_defaults(doc: string): seq[Option] =
-  var split = doc.split_incl(re"\n\ *(<\S+?>|-\S+?)")
+  var split = doc.split_incl(re2"\n\ *(<\S+?>|-\S+?)")
   result = @[]
   for i in 1 .. split.len div 2:
     var s = split[i*2-1] & split[i*2]
@@ -546,7 +546,7 @@ proc parse_defaults(doc: string): seq[Option] =
 
 
 proc printable_usage(doc: string): string =
-  var usage_split = doc.split_incl(re"(?i)(Usage:)")
+  var usage_split = doc.split_incl(re2"(?i)(Usage:)")
   if usage_split.len < 3:
     raise new_exception(DocoptLanguageError,
         """"usage:" (case-insensitive) not found.""")
@@ -554,7 +554,7 @@ proc printable_usage(doc: string): string =
     raise new_exception(DocoptLanguageError,
         """More than one "usage:" (case-insensitive).""")
   usage_split.delete(0)
-  usage_split.join().split_incl(re"\n\s*\n")[0].strip()
+  usage_split.join().split_incl(re2"\n\s*\n")[0].strip()
 
 
 proc formal_usage(printable_usage: string): string =
