@@ -2,8 +2,8 @@
 # Copyright (C) 2015 Oleh Prypin <blaxpirit@gmail.com>
 # Licensed under terms of MIT license (see LICENSE)
 
-from std/sequtils import deduplicate, delete, filter_it
-import std/[options, os, tables]
+from std/sequtils import deduplicate, delete, filter_it, any_it, count
+import std/[options, os, strmisc, tables]
 import regex
 import docopt/util
 

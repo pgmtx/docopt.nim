@@ -41,7 +41,7 @@ var total, passed = 0
 
 const tests = static_read("testcases.docopt")
 for each_line in (tests & "\n\n").split_lines():
-  var line = each_line.partition("#").left
+  var line = each_line.partition("#")[0]
   if not in_doc and line.starts_with("r\"\"\""):
     in_doc = true
     doc = ""
@@ -49,22 +49,22 @@ for each_line in (tests & "\n\n").split_lines():
   if in_doc:
     doc &= line
     if line.ends_with("\"\"\""):
-      doc = doc[0 .. doc.len-4]
+      doc = doc[0 .. ^4]
       in_doc = false
-    doc &= "\n"
+    doc &= '\n'
   elif line.starts_with("$ prog"):
     assert args.is_none and expected.is_none
     args = some(line.substr(7))
-  elif line.starts_with("{") or line.starts_with("\""):
+  elif line.starts_with('{') or line.starts_with('"'):
     assert args.is_some and expected.is_none
     expected = some(line)
   elif line.len > 0:
     assert expected.is_some
-    expected = some(expected.get & "\n" & line)
+    expected = some(expected.get & '\n' & line)
   if line.len == 0 and args.is_some and expected.is_some:
-    total += 1
+    inc total
     if test(doc, args.get, expected.get):
-      passed += 1
+      inc passed
     stdout.write("\rTests passed: $#/$#\r".format(passed, total))
     args = none(string)
     expected = none(string)

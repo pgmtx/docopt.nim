@@ -5,40 +5,12 @@
 import std/[strutils, unicode, macros]
 
 
-template any_it*(lst: typed, pred: untyped): bool =
-  ## Does `pred` return true for any of the `it`s of `lst`?
-  var result {.gensym.} = false
-  for it {.inject.} in lst:
-    if pred:
-      result = true
-      break
-  result
-
 template map_it*(lst, typ: typed, op: untyped): untyped =
   ## Returns `seq[typ]` that contains `op` applied to each `it` of `lst`
   var result {.gensym.}: seq[typ] = @[]
   for it {.inject.} in items(lst):
     result.add(op)
   result
-
-
-proc count*[T](s: openarray[T], it: T): int =
-  ## How many times this item appears in an array
-  result = 0
-  for x in s:
-    if x == it:
-      result += 1
-
-
-proc partition*(s, sep: string): tuple[left, sep, right: string] =
-  ## "a+b".partition("+") == ("a", "+", "b")
-  ## "a+b".partition("-") == ("a+b", "", "")
-  assert sep != ""
-  let pos = s.find(sep)
-  if pos < 0:
-    (s, "", "")
-  else:
-    (s.substr(0, pos.pred), s.substr(pos, pos.pred+sep.len), s.substr(pos+sep.len))
 
 
 proc is_upper*(s: string): bool =
